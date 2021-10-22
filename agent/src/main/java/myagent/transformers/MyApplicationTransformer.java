@@ -31,6 +31,7 @@ public class MyApplicationTransformer implements ClassFileTransformer {
                 ClassPool cp = ClassPool.getDefault();
                 CtClass cc = cp.get(targetClassName);
                 CtMethod m = cc.getDeclaredMethod("add");
+
                 /*m.addLocalVariable("startTime", CtClass.longType);
                 m.insertBefore("startTime = System.currentTimeMillis();");
 
@@ -41,7 +42,16 @@ public class MyApplicationTransformer implements ClassFileTransformer {
                 endBlock.append("endTime = System.currentTimeMillis();");
                 endBlock.append("opTime = (endTime-startTime)/1000;");*/
 
-                m.insertAfter("System.out.println(\"les arguments sont: \"+a+\" et \"+b);");
+                //m.insertAfter("System.out.println(\"les arguments sont: \"+a+\" et \"+b);");
+
+                //CtMethod m2 = new CtMethod(m.getReturnType(), m.getName(), m.getParameterTypes(), cc);
+                //m.addLocalVariable("c", CtClass.doubleType);
+                m.setBody("{" +
+                        "     System.out.println(\"args: \"+$1+\" et \"+$2);" +
+                        "     int c = 5;" +
+                        "     System.out.println(\"c=\"+c);" +
+                        "     return $1 + $2;" +
+                        "  }");
 
                 byteCode = cc.toBytecode();
                 cc.detach();
@@ -51,4 +61,5 @@ public class MyApplicationTransformer implements ClassFileTransformer {
         }
         return byteCode;
     }
+
 }
